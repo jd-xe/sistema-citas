@@ -2,9 +2,11 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-secondary fw-bold">Gestión de Médicos</h2>
+    <?php if(isset($_SESSION['user_role_id']) && $_SESSION['user_role_id'] == 1): ?>
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalMedico">
         <i class="fas fa-plus me-2"></i> Nuevo Médico
     </button>
+    <?php endif; ?>
 </div>
 
 <div class="card shadow border-0">
@@ -63,6 +65,7 @@
                                     <i class="fas fa-clock"></i> Horarios
                                 </a>
 
+                                <?php if(isset($_SESSION['user_role_id']) && $_SESSION['user_role_id'] == 1): ?>
                                 <button class="btn btn-sm btn-primary me-1" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#modalEditar"
@@ -83,6 +86,7 @@
                                         onclick="cambiarEstado(<?php echo $id_usuario; ?>, <?php echo $estado; ?>)">
                                     <i class="fas <?php echo $btnIcono; ?>"></i>
                                 </button>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endwhile; ?>

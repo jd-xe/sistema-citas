@@ -7,9 +7,21 @@ class Paciente {
         $this->conn = $db;
     }
 
-    public function leer() {
-        $query = "SELECT * FROM " . $this->table . " WHERE id_rol = 3 ORDER BY nombre ASC";
-        $stmt = $this->conn->prepare($query);
+    public function leer($id_medico = null) {
+        if ($id_medico) {
+            // Solo trae pacientes que tengan al menos una cita con este médico
+            $query = "SELECT DISTINCT u.* FROM " . $this->table . " u 
+                    JOIN citas c ON u.id_usuario = c.id_paciente 
+                    WHERE u.id_rol = 3 AND c.id_medico = :id_medico 
+                    ORDER BY u.nombre ASC";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id_medico', $id_medico);
+        } else {
+            // Trae a todos los pacientes (Comportamiento normal para Admin o Recepción)
+            $query = "SELECT * FROM " . $this->table . " WHERE id_rol = 3 ORDER BY nombre ASC";
+            $stmt = $this->conn->prepare($query);
+        }
+
         $stmt->execute();
         return $stmt;
     }

@@ -2,6 +2,7 @@
 require_once APP_ROOT . '/config/Database.php';
 require_once APP_ROOT . '/models/Caja.php';
 require_once APP_ROOT . '/models/Cita.php'; // Necesario para leer datos de la cita
+require_once APP_ROOT . '/models/Auditoria.php';
 
 class CajaController {
     
@@ -46,6 +47,7 @@ class CajaController {
             $database = new Database();
             $db = $database->connect();
             $cajaModel = new Caja($db);
+            $auditoriaModel = new Auditoria($db);
 
             $id_cita = $_POST['id_cita'];
             $monto = $_POST['monto'];
@@ -53,6 +55,15 @@ class CajaController {
             $obs = $_POST['observaciones'];
 
             if ($cajaModel->registrarCobro($id_cita, $monto, $metodo, $obs)) {
+
+                $auditoriaModel->registrar(
+                    $_SESSION['user_id'], 
+                    'PAGO', 
+                    'pagos', 
+                    $id_cita, 
+                    "Registró un cobro de S/ $monto mediante $metodo"
+                );
+
                 // Redirigir a caja limpio (sin ID) y con mensaje de éxito
                 header('Location: ' . BASE_URL . '/caja?msg=cobro_ok');
             } else {
@@ -64,7 +75,7 @@ class CajaController {
     public function abrir() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $database = new Database(); $db = $database->connect(); $cajaModel = new Caja($db);
-            session_start();
+            if (session_status() === PHP_SESSION_NONE) session_start();
             if ($cajaModel->abrirCaja($_SESSION['user_id'], $_POST['monto_apertura'])) {
                 header('Location: ' . BASE_URL . '/caja?msg=apertura_ok');
             } else {

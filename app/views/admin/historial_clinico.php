@@ -162,16 +162,18 @@
                     </div>
 
                     <div class="tab-pane fade" id="archivos" role="tabpanel">
-                        <div class="mb-4 p-3 bg-light rounded border border-dashed">
-                            <form action="<?php echo BASE_URL; ?>/pacientes/subirArchivo" method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
-                                <input type="hidden" name="id_paciente" value="<?php echo $paciente['id_usuario']; ?>">
-                                <input type="file" name="archivo" class="form-control" required>
-                                <button type="submit" class="btn btn-success fw-bold text-nowrap">
-                                    <i class="fas fa-upload me-2"></i> Subir
-                                </button>
-                            </form>
-                            <small class="text-muted d-block mt-1 ms-1">* Formatos: PDF, JPG, PNG, DOC (Max 5MB)</small>
-                        </div>
+                        <?php if(isset($_SESSION['user_role_id']) && $_SESSION['user_role_id'] != 3): ?>
+                            <div class="mb-4 p-3 bg-light rounded border border-dashed">
+                                <form action="<?php echo BASE_URL; ?>/pacientes/subirArchivo" method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
+                                    <input type="hidden" name="id_paciente" value="<?php echo $paciente['id_usuario']; ?>">
+                                    <input type="file" name="archivo" class="form-control" required>
+                                    <button type="submit" class="btn btn-success fw-bold text-nowrap">
+                                        <i class="fas fa-upload me-2"></i> Subir
+                                    </button>
+                                </form>
+                                <small class="text-muted d-block mt-1 ms-1">* Formatos: PDF, JPG, PNG, DOC (Max 5MB)</small>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="list-group">
                             <?php if(!empty($archivos)): ?>

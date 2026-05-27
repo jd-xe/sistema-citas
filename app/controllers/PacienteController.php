@@ -2,16 +2,26 @@
 require_once APP_ROOT . '/config/Database.php';
 require_once APP_ROOT . '/models/Paciente.php';
 require_once APP_ROOT . '/models/Cita.php'; 
+require_once APP_ROOT . '/models/Auditoria.php';
 
 class PacienteController {
     
     public function index() {
         if (session_status() === PHP_SESSION_NONE) session_start();
+
+            if (!isset($_SESSION['user_role_id']) || $_SESSION['user_role_id'] == 3) {
+                header('Location: ' . BASE_URL . '/home?error=no_autorizado');
+                exit;
+            }
+
         $database = new Database();
         $db = $database->connect();
         $pacienteModel = new Paciente($db);
+
+        $rol = $_SESSION['user_role_id'];
+        $id_medico = ($rol == 2 && isset($_SESSION['medico_id'])) ? $_SESSION['medico_id'] : null;
         
-        $pacientes = $pacienteModel->leer();
+        $pacientes = $pacienteModel->leer($id_medico);
         
         require_once APP_ROOT . '/views/admin/pacientes.php';
     }
@@ -21,6 +31,7 @@ class PacienteController {
             $database = new Database(); 
             $db = $database->connect(); 
             $pacienteModel = new Paciente($db);
+            $auditoriaModel = new Auditoria($db);
             
             $datos = [
                 'nombre' => $_POST['nombre'],
@@ -35,6 +46,15 @@ class PacienteController {
             ];
 
             if ($pacienteModel->crear($datos)) {
+                $id_usuario_logueado = $_SESSION['user_id'];
+                $auditoriaModel->registrar(
+                    $id_usuario_logueado, 
+                    'CREAR', 
+                    'usuarios', 
+                    null, // Si no tienes el ID recién creado a la mano, puedes poner null
+
+                    'Se registró un nuevo paciente: ' . $_POST['nombre']
+                );
                 header('Location: ' . BASE_URL . '/pacientes?msg=creado');
             } else {
                 header('Location: ' . BASE_URL . '/pacientes?msg=error');

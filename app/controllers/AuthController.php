@@ -2,6 +2,7 @@
 require_once APP_ROOT . '/config/Database.php';
 require_once APP_ROOT . '/models/Usuario.php';
 require_once APP_ROOT . '/models/Medico.php';
+require_once APP_ROOT . '/models/Auditoria.php';
 
 class AuthController {
     
@@ -40,6 +41,15 @@ class AuthController {
                     $medicoData = $stmt->fetch(PDO::FETCH_ASSOC);
                     if($medicoData) $_SESSION['medico_id'] = $medicoData['id_medico'];
                 }
+
+                $auditoriaModel = new Auditoria($db);
+                $auditoriaModel->registrar(
+                    $user['id_usuario'], 
+                    'LOGIN', 
+                    'usuarios', 
+                    $user['id_usuario'], 
+                    'Inicio de sesión exitoso al sistema'
+                );
                 
                 // CRÍTICO: Guardar y cerrar sesión antes de redirigir
                 session_write_close();

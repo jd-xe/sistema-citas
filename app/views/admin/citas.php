@@ -50,9 +50,11 @@
                 <button type="submit" class="btn btn-primary w-100" title="Filtrar"><i class="fas fa-filter"></i></button>
             </div>
             <div class="col-md-2">
-                <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#modalNuevaCita">
-                    <i class="fas fa-plus"></i> Nueva Cita
-                </button>
+                <?php if (isset($_SESSION['user_role_id']) && $_SESSION['user_role_id'] != 3): ?>
+                    <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#modalNuevaCita">
+                        <i class="fas fa-plus"></i> Nueva Cita
+                    </button>
+                <?php endif; ?>
             </div>
         </form>
     </div>
@@ -116,20 +118,24 @@
                                 <td class="text-end pe-4">
                                     <?php if($cita['estado'] == 'Pendiente' || $cita['estado'] == 'Finalizada'): ?>
                                         
-                                        <?php if(!$estaPagado): ?>
-                                            <a href="<?php echo BASE_URL; ?>/citas/cobrar?id=<?php echo $cita['id_cita']; ?>" class="btn btn-sm btn-outline-success" title="Cobrar">
-                                                <i class="fas fa-cash-register"></i>
-                                            </a>
-                                        <?php else: ?>
-                                            <button class="btn btn-sm btn-success disabled border-0" title="Cobro Realizado"><i class="fas fa-check-double"></i></button>
+                                        <?php if (in_array($_SESSION['user_role_id'], [1, 4])): ?>
+                                            <?php if(!$estaPagado): ?>
+                                                <a href="<?php echo BASE_URL; ?>/citas/cobrar?id=<?php echo $cita['id_cita']; ?>" class="btn btn-sm btn-outline-success" title="Cobrar">
+                                                    <i class="fas fa-cash-register"></i>
+                                                </a>
+                                            <?php else: ?>
+                                                <button class="btn btn-sm btn-success disabled border-0" title="Cobro Realizado"><i class="fas fa-check-double"></i></button>
+                                            <?php endif; ?>
                                         <?php endif; ?>
 
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalAtencion" 
-                                                onclick="cargarAtencion(<?php echo $cita['id_cita']; ?>)"><i class="fas fa-stethoscope"></i></button>
+                                        <?php if (in_array($_SESSION['user_role_id'], [1, 2])): ?>
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalAtencion" 
+                                                    onclick="cargarAtencion(<?php echo $cita['id_cita']; ?>)"><i class="fas fa-stethoscope"></i></button>
+                                        <?php endif; ?>
                                         
                                         <?php if($cita['estado'] == 'Pendiente'): ?>
                                             <a href="<?php echo BASE_URL; ?>/citas/eliminar?id=<?php echo $cita['id_cita']; ?>" class="btn btn-sm btn-outline-danger" 
-                                            onclick="return confirm('¿Cancelar cita?')"><i class="fas fa-times"></i></a>
+                                            onclick="return confirm('¿Desea cancelar esta cita?')"><i class="fas fa-times"></i></a>
                                         <?php endif; ?>
 
                                     <?php endif; ?>

@@ -195,11 +195,7 @@ $logo_app = !empty($empresa_header['logo']) ? $empresa_header['logo'] : null;
                     <i class="fas fa-calendar-alt"></i> Citas
                 </a>
 
-                <?php if ($rol == 1 || $rol == 4): ?>
-                    <a href="<?php echo BASE_URL; ?>/medicos"
-                        class="list-group-item list-group-item-action <?php echo strpos($_SERVER['REQUEST_URI'], '/medicos') !== false ? 'active' : ''; ?>">
-                        <i class="fas fa-user-md"></i> Médicos
-                    </a>
+                <?php if($rol==1):?>
                     <a href="<?php echo BASE_URL; ?>/especialidades"
                         class="list-group-item list-group-item-action <?php echo strpos($_SERVER['REQUEST_URI'], '/especialidades') !== false ? 'active' : ''; ?>">
                         <i class="fas fa-stethoscope"></i> Especialidades
@@ -208,16 +204,33 @@ $logo_app = !empty($empresa_header['logo']) ? $empresa_header['logo'] : null;
                         class="list-group-item list-group-item-action <?php echo strpos($_SERVER['REQUEST_URI'], '/servicios') !== false ? 'active' : ''; ?>">
                         <i class="fas fa-tags"></i> Servicios / Tarifas
                     </a>
+                <?php endif; ?>
+
+                <?php if ($rol == 1 || $rol == 4): ?>
+                    <a href="<?php echo BASE_URL; ?>/medicos"
+                        class="list-group-item list-group-item-action <?php echo strpos($_SERVER['REQUEST_URI'], '/medicos') !== false ? 'active' : ''; ?>">
+                        <i class="fas fa-user-md"></i> Médicos
+                    </a>
                     <a href="<?php echo BASE_URL; ?>/medicamentos"
                         class="list-group-item list-group-item-action <?php echo strpos($_SERVER['REQUEST_URI'], '/medicamentos') !== false ? 'active' : ''; ?>">
                         <i class="fas fa-pills"></i> Farmacia
                     </a>
                 <?php endif; ?>
 
-                <a href="<?php echo BASE_URL; ?>/pacientes"
-                    class="list-group-item list-group-item-action <?php echo strpos($_SERVER['REQUEST_URI'], '/pacientes') !== false ? 'active' : ''; ?>">
-                    <i class="fas fa-users"></i> Pacientes
-                </a>
+                <?php 
+                    // 1. Validamos si el usuario logueado tiene el rol de Paciente (Rol 3)
+                    $esPaciente = (isset($_SESSION['user_role_id']) && $_SESSION['user_role_id'] == 3);
+
+                    // 2. Definimos dinámicamente la URL, el texto y el icono según el rol
+                    $urlPacientes  = $esPaciente ? BASE_URL . '/pacientes/historial?id=' . $_SESSION['user_id'] : BASE_URL . '/pacientes';
+                    $textoPacientes = $esPaciente ? 'Mi Historial Clínico' : 'Pacientes';
+                    $iconoPacientes = $esPaciente ? 'fas fa-file-medical' : 'fas fa-users';
+                    ?>
+
+                    <a href="<?php echo $urlPacientes; ?>"
+                        class="list-group-item list-group-item-action <?php echo strpos($_SERVER['REQUEST_URI'], '/pacientes') !== false ? 'active' : ''; ?>">
+                        <i class="<?php echo $iconoPacientes; ?>"></i> <?php echo $textoPacientes; ?>
+                    </a>
 
                 <?php if ($rol == 1 || $rol == 4): ?>
                     <a href="<?php echo BASE_URL; ?>/caja"

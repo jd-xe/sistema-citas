@@ -314,7 +314,7 @@
                                                     <h6 class="mb-0 fw-bold text-dark">
                                                         <?php echo htmlspecialchars($cita['paciente']); ?></h6>
                                                     <span class="small text-muted">ID:
-                                                        #<?php echo str_pad($cita['id'], 4, '0', STR_PAD_LEFT); ?></span>
+                                                        #<?php echo str_pad($cita['id_cita'], 4, '0', STR_PAD_LEFT); ?></span>
                                                 </div>
                                             </div>
                                         </td>
